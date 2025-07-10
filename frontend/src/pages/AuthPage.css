@@ -1,0 +1,98 @@
+/* Full-page reset */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Full-screen background and center alignment */
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(to right, #2193b0, #6dd5ed);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Login/Register box */
+.auth-container {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.2);
+  width: 400px;
+  max-width: 100%;
+  text-align: center;
+}
+
+/* App Title (e.g., QuickTask) */
+.main-title {
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  font-size: 36px;
+  font-weight: bold;
+  color: #0077cc;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading under the title (Login/Register) */
+.auth-container h2 {
+  margin-bottom: 25px;
+  color: #333333;
+  font-size: 20px;
+}
+
+/* Form layout */
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input fields */
+.auth-container input {
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.auth-container input:focus {
+  border-color: #0077cc;
+}
+
+/* Submit button */
+.auth-container button {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-container button:hover {
+  background-color: #005fa3;
+}
+
+/* Toggle between Login/Register */
+.toggle-text {
+  margin-top: 20px;
+  color: #444;
+  font-size: 14px;
+}
+
+.toggle-text span {
+  color: #0077cc;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
