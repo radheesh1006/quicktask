@@ -16,9 +16,11 @@ function AuthPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const url = isLogin
-      ? 'http://localhost:5000/api/auth/login'
-      : 'http://localhost:5000/api/auth/register';
+      ? `${API_BASE_URL}/api/auth/login`
+      : `${API_BASE_URL}/api/auth/register`;
 
     try {
       const res = await axios.post(url, form);
@@ -40,7 +42,7 @@ function AuthPage() {
       <div className="auth-container">
         {/* ✅ App Title */}
         <h1 className="main-title">🚀 QuickTask</h1>
-        
+
         <h2>{isLogin ? 'Login to Your Dashboard' : 'Register a New Account'}</h2>
         <form onSubmit={handleSubmit}>
           {!isLogin && (
