@@ -22,6 +22,8 @@ function AuthPage() {
       ? `${API_BASE_URL}/api/auth/login`
       : `${API_BASE_URL}/api/auth/register`;
 
+    console.log('🔁 API_BASE_URL →', API_BASE_URL); // ✅ confirm it's correct in browser console
+
     try {
       const res = await axios.post(url, form);
       if (isLogin) {
@@ -33,6 +35,7 @@ function AuthPage() {
         setIsLogin(true);
       }
     } catch (err) {
+      console.error('❌ Auth failed:', err);
       alert(err.response?.data?.message || 'Something went wrong');
     }
   };
@@ -40,10 +43,9 @@ function AuthPage() {
   return (
     <div className="auth-page">
       <div className="auth-container">
-        {/* ✅ App Title */}
         <h1 className="main-title">🚀 QuickTask</h1>
-
         <h2>{isLogin ? 'Login to Your Dashboard' : 'Register a New Account'}</h2>
+
         <form onSubmit={handleSubmit}>
           {!isLogin && (
             <input
@@ -73,6 +75,7 @@ function AuthPage() {
           />
           <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
         </form>
+
         <p className="toggle-text">
           {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
           <span onClick={() => setIsLogin(!isLogin)}>
@@ -85,3 +88,4 @@ function AuthPage() {
 }
 
 export default AuthPage;
+
