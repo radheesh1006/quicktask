@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import './TaskForm.css';
 
 function TaskForm({ onSubmit, task }) {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    dueDate: '',
-    priority: 'Low',
+    dueDateTime: '',
+    priority: 'Medium',
+    status: 'Pending'
   });
 
   useEffect(() => {
     if (task) {
-      setForm({
-        title: task.title,
-        description: task.description,
-        dueDate: task.dueDate,
-        priority: task.priority,
-      });
+      // Format existing task datetime to local ISO format for input
+      const localTime = new Date(task.dueDateTime);
+      const offset = localTime.getTimezoneOffset();
+      localTime.setMinutes(localTime.getMinutes() - offset); // Convert to local
+      const iso = localTime.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+      setForm({ ...task, dueDateTime: iso });
     }
   }, [task]);
 
@@ -26,37 +26,52 @@ function TaskForm({ onSubmit, task }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.title || !form.description || !form.dueDate) return;
-    onSubmit(form);
+
+    const localTime = new Date(form.dueDateTime);
+    const utcTime = new Date(localTime.getTime() - localTime.getTimezoneOffset() * 60000);
+    const finalForm = { ...form, dueDateTime: utcTime.toISOString() };
+
+    onSubmit(finalForm);
     setForm({
       title: '',
       description: '',
-      dueDate: '',
-      priority: 'Low',
+      dueDateTime: '',
+      priority: 'Medium',
+      status: 'Pending'
     });
   };
 
   return (
-    <form className="task-form" onSubmit={handleSubmit}>
-      <h2>📝 Create New Task</h2>
-
-      <label>Task Title</label>
-      <input type="text" name="title" value={form.title} onChange={handleChange} required />
-
-      <label>Description</label>
-      <textarea name="description" value={form.description} onChange={handleChange} required />
-
-      <label>Due Date & Time</label>
-      <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={handleChange} required />
-
-      <label>Priority</label>
+    <form onSubmit={handleSubmit}>
+      <h2>{task ? '✏️ Edit Task' : '➕ Create New Task'}</h2>
+      <input
+        type="text"
+        name="title"
+        placeholder="Task Title"
+        value={form.title}
+        onChange={handleChange}
+        required
+      />
+      <textarea
+        name="description"
+        placeholder="Description"
+        value={form.description}
+        onChange={handleChange}
+        required
+      />
+      <input
+        type="datetime-local"
+        name="dueDateTime"
+        value={form.dueDateTime}
+        onChange={handleChange}
+        required
+      />
       <select name="priority" value={form.priority} onChange={handleChange}>
         <option>Low</option>
         <option>Medium</option>
         <option>High</option>
       </select>
-
-      <button type="submit">Add Task</button>
+      <button type="submit">{task ? 'Update Task' : 'Add Task'}</button>
     </form>
   );
 }
