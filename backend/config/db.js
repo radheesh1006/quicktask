@@ -5,7 +5,7 @@ const connectDB = async () => {
     const mongoURI = process.env.MONGO_URL;
 
     if (!mongoURI) {
-      throw new Error("MONGO_URL is not defined in environment variables.");
+      throw new Error("❌ MONGO_URL is not defined in environment variables.");
     }
 
     await mongoose.connect(mongoURI, {
@@ -13,12 +13,11 @@ const connectDB = async () => {
       useUnifiedTopology: true,
     });
 
-    console.log('✅ MongoDB connected');
+    console.log('✅ MongoDB connected successfully');
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', error.message);
+    process.exit(1); // Exit the process if DB connection fails
   }
 };
 
 module.exports = connectDB;
-
