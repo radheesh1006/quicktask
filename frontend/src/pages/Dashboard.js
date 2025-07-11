@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import TaskForm from '../components/TaskForm';
 import TaskList from '../components/TaskList';
 import './Dashboard.css';
@@ -6,60 +7,43 @@ import './Dashboard.css';
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const token = localStorage.getItem('token');
 
-  // ✅ Load tasks from localStorage on first render
-  useEffect(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    if (savedTasks) {
-      try {
-        setTasks(JSON.parse(savedTasks));
-      } catch (error) {
-        console.error('Failed to parse saved tasks', error);
-        setTasks([]);
-      }
+  // ✅ Load tasks from backend
+  const fetchTasks = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/tasks`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTasks(res.data);
+    } catch (error) {
+      console.error('Failed to fetch tasks', error);
+      alert('Failed to load tasks');
     }
+  };
+
+  useEffect(() => {
+    fetchTasks();
   }, []);
 
-  // ✅ Check for overdue tasks every 60 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const updatedTasks = tasks.map((task) => {
-        if (task.status === 'Pending' && new Date(task.dueDate) < now) {
-          return { ...task, status: 'Overdue' };
-        }
-        return task;
-      });
-
-      const isChanged = JSON.stringify(updatedTasks) !== JSON.stringify(tasks);
-      if (isChanged) {
-        setTasks(updatedTasks);
-        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+  // ✅ Add or update task
+  const handleAddOrUpdate = async (task) => {
+    try {
+      if (editingTask) {
+        await axios.put(`${API_BASE_URL}/api/tasks/${editingTask._id}`, task, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setEditingTask(null);
+      } else {
+        await axios.post(`${API_BASE_URL}/api/tasks`, task, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
       }
-    }, 60000); // runs every 60 seconds
-
-    return () => clearInterval(interval);
-  }, [tasks]);
-
-  // ✅ Create or update task + save manually
-  const handleAddOrUpdate = (task) => {
-    let updatedTasks;
-    if (editingTask) {
-      updatedTasks = tasks.map((t) =>
-        t.id === editingTask.id ? { ...task, id: t.id, status: t.status } : t
-      );
-      setEditingTask(null);
-    } else {
-      const newTask = {
-        ...task,
-        id: Date.now(),
-        status: 'Pending',
-      };
-      updatedTasks = [...tasks, newTask];
+      fetchTasks(); // refresh after add/update
+    } catch (err) {
+      alert('Failed to save task');
     }
-
-    setTasks(updatedTasks);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   };
 
   // ✅ Edit task
@@ -68,19 +52,27 @@ function Dashboard() {
   };
 
   // ✅ Delete task
-  const handleDelete = (id) => {
-    const updated = tasks.filter((t) => t.id !== id);
-    setTasks(updated);
-    localStorage.setItem('tasks', JSON.stringify(updated));
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/api/tasks/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchTasks();
+    } catch (err) {
+      alert('Failed to delete task');
+    }
   };
 
   // ✅ Mark task as completed
-  const handleComplete = (id) => {
-    const updated = tasks.map((t) =>
-      t.id === id ? { ...t, status: 'Completed' } : t
-    );
-    setTasks(updated);
-    localStorage.setItem('tasks', JSON.stringify(updated));
+  const handleComplete = async (id) => {
+    try {
+      await axios.put(`${API_BASE_URL}/api/tasks/${id}`, { status: 'Completed' }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchTasks();
+    } catch (err) {
+      alert('Failed to mark as completed');
+    }
   };
 
   return (
@@ -104,3 +96,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
