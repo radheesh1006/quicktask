@@ -7,19 +7,24 @@ import './Dashboard.css';
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const [loading, setLoading] = useState(true);
+
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
   const token = localStorage.getItem('token');
 
   // ✅ Load tasks from backend
   const fetchTasks = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/tasks`, {
+      setLoading(true);
+      const res = await axios.get(`${API_BASE_URL}/tasks`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTasks(res.data);
     } catch (error) {
       console.error('Failed to fetch tasks', error);
       alert('Failed to load tasks');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,12 +36,12 @@ function Dashboard() {
   const handleAddOrUpdate = async (task) => {
     try {
       if (editingTask) {
-        await axios.put(`${API_BASE_URL}/api/tasks/${editingTask._id}`, task, {
+        await axios.put(`${API_BASE_URL}/tasks/${editingTask._id}`, task, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setEditingTask(null);
       } else {
-        await axios.post(`${API_BASE_URL}/api/tasks`, task, {
+        await axios.post(`${API_BASE_URL}/tasks`, task, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -46,15 +51,13 @@ function Dashboard() {
     }
   };
 
-  // ✅ Edit task
   const handleEdit = (task) => {
     setEditingTask(task);
   };
 
-  // ✅ Delete task
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/tasks/${id}`, {
+      await axios.delete(`${API_BASE_URL}/tasks/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchTasks();
@@ -63,10 +66,9 @@ function Dashboard() {
     }
   };
 
-  // ✅ Mark task as completed
   const handleComplete = async (id) => {
     try {
-      await axios.put(`${API_BASE_URL}/api/tasks/${id}`, { status: 'Completed' }, {
+      await axios.put(`${API_BASE_URL}/tasks/${id}`, { status: 'Completed' }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchTasks();
@@ -78,17 +80,24 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <h1>📓 Task Management Dashboard</h1>
+
       <div className="dashboard-grid">
         <div className="section-box">
           <TaskForm onSubmit={handleAddOrUpdate} task={editingTask} />
         </div>
         <div className="section-box">
-          <TaskList
-            tasks={tasks}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onComplete={handleComplete}
-          />
+          {loading ? (
+            <p>Loading tasks...</p>
+          ) : tasks.length === 0 ? (
+            <p>No tasks available. Add one!</p>
+          ) : (
+            <TaskList
+              tasks={tasks}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onComplete={handleComplete}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -96,4 +105,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
