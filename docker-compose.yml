@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - MONGO_URL=mongodb://host.docker.internal:27017/quicktaskdb
+     - MONGO_URL=mongodb://mongo:27017/quicktaskdb
     depends_on:
       - mongo
 
