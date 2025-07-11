@@ -22,21 +22,31 @@ function AuthPage() {
       ? `${API_BASE_URL}/api/auth/login`
       : `${API_BASE_URL}/api/auth/register`;
 
-    console.log('🔁 API_BASE_URL →', API_BASE_URL); // ✅ confirm it's correct in browser console
+    // ✅ Log for debugging
+    console.log('🔁 API_BASE_URL →', API_BASE_URL);
+    console.log('📤 URL:', url);
+    console.log('📦 Payload:', form);
+
+    // ✅ Simple field validation
+    if (!form.email || !form.password || (!isLogin && !form.name)) {
+      alert('Please fill all required fields');
+      return;
+    }
 
     try {
       const res = await axios.post(url, form);
+
       if (isLogin) {
         localStorage.setItem('token', res.data.token);
-        alert('Login successful');
+        alert('✅ Login successful');
         window.location.href = '/dashboard';
       } else {
-        alert('Registration successful. You can now log in.');
+        alert('✅ Registration successful. You can now log in.');
         setIsLogin(true);
       }
     } catch (err) {
-      console.error('❌ Auth failed:', err);
-      alert(err.response?.data?.message || 'Something went wrong');
+      console.error('❌ Auth failed:', err.response || err);
+      alert(err.response?.data?.error || 'Something went wrong');
     }
   };
 
@@ -73,7 +83,9 @@ function AuthPage() {
             onChange={handleChange}
             required
           />
-          <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
+          <button type="submit">
+            {isLogin ? 'Login' : 'Register'}
+          </button>
         </form>
 
         <p className="toggle-text">
@@ -88,4 +100,3 @@ function AuthPage() {
 }
 
 export default AuthPage;
-
