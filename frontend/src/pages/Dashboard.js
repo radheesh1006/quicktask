@@ -12,19 +12,15 @@ function Dashboard() {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
   const token = localStorage.getItem('token');
 
-  // ✅ Load tasks from backend
   const fetchTasks = async () => {
     try {
       setLoading(true);
       const res = await axios.get(`${API_BASE_URL}/api/tasks`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("✅ Tasks fetched:", res.data);
       setTasks(res.data);
     } catch (error) {
-      console.error('❌ Failed to fetch tasks:', error.response?.data || error.message);
+      console.error('Failed to fetch tasks', error);
       alert('Failed to load tasks');
     } finally {
       setLoading(false);
@@ -35,22 +31,20 @@ function Dashboard() {
     fetchTasks();
   }, []);
 
-  // ✅ Add or update task
   const handleAddOrUpdate = async (task) => {
     try {
       if (editingTask) {
         await axios.put(`${API_BASE_URL}/api/tasks/${editingTask._id}`, task, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
         setEditingTask(null);
       } else {
         await axios.post(`${API_BASE_URL}/api/tasks`, task, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
       }
-      fetchTasks(); // refresh after add/update
+      fetchTasks();
     } catch (err) {
-      console.error('❌ Failed to save task:', err.response?.data || err.message);
       alert('Failed to save task');
     }
   };
@@ -62,27 +56,21 @@ function Dashboard() {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_BASE_URL}/api/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
       fetchTasks();
     } catch (err) {
-      console.error('❌ Failed to delete task:', err.response?.data || err.message);
       alert('Failed to delete task');
     }
   };
 
   const handleComplete = async (id) => {
     try {
-      await axios.put(
-        `${API_BASE_URL}/api/tasks/${id}`,
-        { status: 'Completed' },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.put(`${API_BASE_URL}/api/tasks/${id}`, { status: 'Completed' }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       fetchTasks();
     } catch (err) {
-      console.error('❌ Failed to mark as completed:', err.response?.data || err.message);
       alert('Failed to mark as completed');
     }
   };
@@ -90,7 +78,6 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <h1>📓 Task Management Dashboard</h1>
-
       <div className="dashboard-grid">
         <div className="section-box">
           <TaskForm onSubmit={handleAddOrUpdate} task={editingTask} />
@@ -115,3 +102,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
