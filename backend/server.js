@@ -13,18 +13,24 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // For parsing JSON
+app.use(express.json()); // Parses JSON body
 
 // Routes
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/task');
 
-app.use('/api/auth', authRoutes);   // ✅ Login/Register
-app.use('/api/tasks', taskRoutes);  // ✅ Task operations
+app.use('/api/auth', authRoutes);    // 🔐 Login/Register
+app.use('/api/tasks', taskRoutes);  // 📋 Task APIs
 
-// Root check (optional)
+// Health check
 app.get('/', (req, res) => {
   res.send('✅ Backend API is running');
+});
+
+// Error handler middleware (Important for debugging)
+app.use((err, req, res, next) => {
+  console.error('🔥 Backend Error:', err.stack);
+  res.status(500).json({ message: 'Internal server error' });
 });
 
 // Start server
