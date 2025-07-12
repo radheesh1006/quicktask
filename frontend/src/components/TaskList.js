@@ -8,6 +8,18 @@ function TaskList({ tasks, onEdit, onDelete, onComplete }) {
     filter === 'All' ? true : task.status === filter
   );
 
+  const formatDateTime = (isoString) => {
+    if (!isoString) return 'N/A';
+    return new Date(isoString).toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
   return (
     <div className="task-list">
       <h2>📋 Your Tasks</h2>
@@ -41,11 +53,7 @@ function TaskList({ tasks, onEdit, onDelete, onComplete }) {
               <tr key={task._id}>
                 <td>{task.title}</td>
                 <td>{task.priority}</td>
-                <td>
-                  {task.dueDate
-                    ? new Date(task.dueDate).toLocaleString()
-                    : 'N/A'}
-                </td>
+                <td>{formatDateTime(task.dueDate)}</td>
                 <td>{task.status}</td>
                 <td>
                   <button onClick={() => onEdit(task)}>Edit</button>
