@@ -12,10 +12,7 @@ function TaskForm({ onSubmit, task }) {
 
   useEffect(() => {
     if (task) {
-      const localTime = new Date(task.dueDate);
-      const offset = localTime.getTimezoneOffset();
-      localTime.setMinutes(localTime.getMinutes() - offset);
-      const iso = localTime.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+      const iso = new Date(task.dueDate).toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
       setForm({ ...task, dueDate: iso });
     }
   }, [task]);
@@ -27,9 +24,10 @@ function TaskForm({ onSubmit, task }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const localTime = new Date(form.dueDate);
-    const utcTime = new Date(localTime.getTime() - localTime.getTimezoneOffset() * 60000);
-    const finalForm = { ...form, dueDate: utcTime.toISOString() };
+    const finalForm = {
+      ...form,
+      dueDate: new Date(form.dueDate).toISOString() // direct ISO, no double timezone shift
+    };
 
     onSubmit(finalForm);
 
@@ -78,4 +76,5 @@ function TaskForm({ onSubmit, task }) {
 }
 
 export default TaskForm;
+
 
