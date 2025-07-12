@@ -4,9 +4,11 @@ import './TaskList.css';
 function TaskList({ tasks, onEdit, onDelete, onComplete }) {
   const [filter, setFilter] = useState('All');
 
-  const filteredTasks = tasks.filter(task =>
-    filter === 'All' ? true : task.status === filter
-  );
+  const filteredTasks = tasks.filter(task => {
+    const isOverdue = task.status === 'Pending' && new Date(task.dueDate) < new Date();
+    const effectiveStatus = isOverdue ? 'Overdue' : task.status;
+    return filter === 'All' ? true : effectiveStatus === filter;
+  });
 
   const formatDateTime = (isoString) => {
     if (!isoString) return 'N/A';
@@ -49,23 +51,28 @@ function TaskList({ tasks, onEdit, onDelete, onComplete }) {
             </tr>
           </thead>
           <tbody>
-            {filteredTasks.map(task => (
-              <tr key={task._id}>
-                <td>{task.title}</td>
-                <td>{task.priority}</td>
-                <td>{formatDateTime(task.dueDate)}</td>
-                <td>{task.status}</td>
-                <td>
-                  <button onClick={() => onEdit(task)}>Edit</button>
-                  <button onClick={() => onDelete(task._id)}>Delete</button>
-                  {task.status !== 'Completed' && (
-                    <button onClick={() => onComplete(task._id)}>
-                      Mark Done
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {filteredTasks.map(task => {
+              const isOverdue = task.status === 'Pending' && new Date(task.dueDate) < new Date();
+              const displayStatus = isOverdue ? 'Overdue' : task.status;
+
+              return (
+                <tr key={task._id}>
+                  <td>{task.title}</td>
+                  <td>{task.priority}</td>
+                  <td>{formatDateTime(task.dueDate)}</td>
+                  <td>{displayStatus}</td>
+                  <td>
+                    <button onClick={() => onEdit(task)}>Edit</button>
+                    <button onClick={() => onDelete(task._id)}>Delete</button>
+                    {task.status !== 'Completed' && (
+                      <button onClick={() => onComplete(task._id)}>
+                        Mark Done
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
