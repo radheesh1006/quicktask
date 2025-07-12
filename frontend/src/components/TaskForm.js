@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import './TaskForm.css';
 
 function TaskForm({ onSubmit, task }) {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    dueDateTime: '',
+    dueDate: '',
     priority: 'Medium',
     status: 'Pending'
   });
 
   useEffect(() => {
     if (task) {
-      // Format existing task datetime to local ISO format for input
-      const localTime = new Date(task.dueDateTime);
+      const localTime = new Date(task.dueDate);
       const offset = localTime.getTimezoneOffset();
-      localTime.setMinutes(localTime.getMinutes() - offset); // Convert to local
+      localTime.setMinutes(localTime.getMinutes() - offset);
       const iso = localTime.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
-      setForm({ ...task, dueDateTime: iso });
+      setForm({ ...task, dueDate: iso });
     }
   }, [task]);
 
@@ -27,22 +27,23 @@ function TaskForm({ onSubmit, task }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const localTime = new Date(form.dueDateTime);
+    const localTime = new Date(form.dueDate);
     const utcTime = new Date(localTime.getTime() - localTime.getTimezoneOffset() * 60000);
-    const finalForm = { ...form, dueDateTime: utcTime.toISOString() };
+    const finalForm = { ...form, dueDate: utcTime.toISOString() };
 
     onSubmit(finalForm);
+
     setForm({
       title: '',
       description: '',
-      dueDateTime: '',
+      dueDate: '',
       priority: 'Medium',
       status: 'Pending'
     });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="task-form" onSubmit={handleSubmit}>
       <h2>{task ? '✏️ Edit Task' : '➕ Create New Task'}</h2>
       <input
         type="text"
@@ -61,8 +62,8 @@ function TaskForm({ onSubmit, task }) {
       />
       <input
         type="datetime-local"
-        name="dueDateTime"
-        value={form.dueDateTime}
+        name="dueDate"
+        value={form.dueDate}
         onChange={handleChange}
         required
       />
@@ -77,3 +78,4 @@ function TaskForm({ onSubmit, task }) {
 }
 
 export default TaskForm;
+
