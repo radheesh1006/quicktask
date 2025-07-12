@@ -9,6 +9,7 @@ function Dashboard() {
   const [editingTask, setEditingTask] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Correct API base URL for Docker environment
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
   const token = localStorage.getItem('token');
 
@@ -33,6 +34,11 @@ function Dashboard() {
 
   const handleAddOrUpdate = async (task) => {
     try {
+      // Ensure the date format is valid before sending
+      if (task.dueDate) {
+        task.dueDate = new Date(task.dueDate).toISOString(); // Save as ISO format
+      }
+
       if (editingTask) {
         await axios.put(`${API_BASE_URL}/api/tasks/${editingTask._id}`, task, {
           headers: { Authorization: `Bearer ${token}` }
@@ -102,4 +108,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
