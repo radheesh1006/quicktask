@@ -3,6 +3,7 @@ import './TaskForm.css';
 
 function TaskForm({ onSubmit, task }) {
   const [form, setForm] = useState({
+    userName: '',    // added
     title: '',
     description: '',
     dueDate: '',
@@ -12,7 +13,7 @@ function TaskForm({ onSubmit, task }) {
 
   useEffect(() => {
     if (task) {
-      const iso = new Date(task.dueDate).toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+      const iso = new Date(task.dueDate).toISOString().slice(0, 16);
       setForm({ ...task, dueDate: iso });
     }
   }, [task]);
@@ -26,12 +27,13 @@ function TaskForm({ onSubmit, task }) {
 
     const finalForm = {
       ...form,
-      dueDate: new Date(form.dueDate).toISOString() // direct ISO, no double timezone shift
+      dueDate: new Date(form.dueDate).toISOString()
     };
 
     onSubmit(finalForm);
 
     setForm({
+      userName: '',
       title: '',
       description: '',
       dueDate: '',
@@ -43,6 +45,15 @@ function TaskForm({ onSubmit, task }) {
   return (
     <form className="task-form" onSubmit={handleSubmit}>
       <h2>{task ? '✏️ Edit Task' : '➕ Create New Task'}</h2>
+      
+      <input
+        type="text"
+        name="userName"
+        placeholder="User Name"
+        value={form.userName}
+        onChange={handleChange}
+        required
+      />
       <input
         type="text"
         name="title"
@@ -76,5 +87,3 @@ function TaskForm({ onSubmit, task }) {
 }
 
 export default TaskForm;
-
-
