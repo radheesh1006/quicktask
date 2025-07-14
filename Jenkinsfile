@@ -12,15 +12,13 @@ pipeline {
       }
     }
 
-    stage('Build Docker Images') {
+    stage('Rebuild & Run Containers') {
       steps {
-        bat 'docker-compose build --no-cache'
-      }
-    }
-
-    stage('Run Containers') {
-      steps {
-        bat 'docker-compose up -d'
+        dir('') {
+          bat 'docker-compose down --remove-orphans'
+          bat 'docker-compose build --no-cache'
+          bat 'docker-compose up -d'
+        }
       }
     }
 
@@ -31,4 +29,3 @@ pipeline {
     }
   }
 }
-
