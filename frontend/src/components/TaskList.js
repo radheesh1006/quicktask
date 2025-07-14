@@ -43,9 +43,8 @@ function TaskList({ tasks, onEdit, onDelete, onComplete }) {
         <table className="task-table">
           <thead>
             <tr>
-              <th>User Name</th>   
+              <th>User Name</th>   {/* Added */}
               <th>Title</th>
-              <th>Description</th>  {/* ✅ Added */}
               <th>Priority</th>
               <th>Due Date</th>
               <th>Status</th>
@@ -59,9 +58,8 @@ function TaskList({ tasks, onEdit, onDelete, onComplete }) {
 
               return (
                 <tr key={task._id}>
-                  <td>{task.userName}</td>
+                  <td>{task.userName}</td>  {/* Added */}
                   <td>{task.title}</td>
-                  <td>{task.description}</td>  {/* ✅ Added */}
                   <td>{task.priority}</td>
                   <td>{formatDateTime(task.dueDate)}</td>
                   <td>{displayStatus}</td>
@@ -85,4 +83,5 @@ function TaskList({ tasks, onEdit, onDelete, onComplete }) {
 }
 
 export default TaskList;
+
 
