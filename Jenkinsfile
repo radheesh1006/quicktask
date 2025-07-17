@@ -54,11 +54,12 @@ pipeline {
 
         stage('Run Backend Tests') {
             steps {
-                dir('backend') {
-                    bat 'npm install'
-                    bat 'npm install --save-dev supertest jest-junit'
-                    bat 'npm test -- --ci --reporters=default --reporters=jest-junit --outputFile=../backend-test-results.xml'
-                }
+                bat '''
+                    echo Running backend tests inside the backend container
+                    docker exec quicktask-pipeline-backend-1 npm install
+                    docker exec quicktask-pipeline-backend-1 npm install --save-dev supertest jest-junit
+                    docker exec quicktask-pipeline-backend-1 npm test -- --ci --reporters=default --reporters=jest-junit --outputFile=backend-test-results.xml
+                '''
             }
         }
 
@@ -73,7 +74,7 @@ pipeline {
 
         stage('Publish Test Results') {
             steps {
-                junit '**/backend-test-results.xml'
+                junit '**/backend/backend-test-results.xml'
             }
         }
 
@@ -91,5 +92,6 @@ pipeline {
         }
     }
 }
+
 
 
