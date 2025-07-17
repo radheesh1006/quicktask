@@ -52,6 +52,7 @@ describe('Task API Integration Tests', () => {
         description: 'Test description',
         dueDate: '2025-12-31T23:59:59.000Z',
         priority: 'High',
+        userName: 'Test User'
       });
 
     expect(res.statusCode).toBe(201);
