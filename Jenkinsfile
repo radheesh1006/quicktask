@@ -39,13 +39,14 @@ pipeline {
             }
         }
 
-        stage('Start MongoDB for Tests') {
+        stage('Start MongoDB') {
             steps {
                 bat '''
-                    docker rm -f test-mongo || echo "No existing test-mongo container"
-                    docker run -d --name test-mongo -p 27017:27017 mongo:latest
-                    docker ps
+                    docker run -d --name quicktask-mongo ^
+                    -p 27017:27017 ^
+                    mongo:6
                 '''
+                bat 'timeout /t 10'
             }
         }
 
@@ -61,8 +62,10 @@ pipeline {
 
         stage('Stop MongoDB') {
             steps {
-                bat 'docker stop test-mongo'
-                bat 'docker rm test-mongo'
+                bat '''
+                    docker stop quicktask-mongo
+                    docker rm quicktask-mongo
+                '''
             }
         }
 
@@ -95,4 +98,3 @@ pipeline {
         }
     }
 }
-
