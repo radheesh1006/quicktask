@@ -35,6 +35,7 @@ pipeline {
                 bat 'docker-compose down --remove-orphans'
                 bat 'docker-compose build --no-cache'
                 bat 'docker-compose up -d'
+                bat 'docker ps'
             }
         }
 
