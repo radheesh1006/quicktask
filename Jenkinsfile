@@ -39,6 +39,16 @@ pipeline {
             }
         }
 
+        stage('Start MongoDB for Tests') {
+            steps {
+                bat '''
+                    docker rm -f test-mongo || echo "No existing test-mongo container"
+                    docker run -d --name test-mongo -p 27017:27017 mongo:latest
+                    docker ps
+                '''
+            }
+        }
+
         stage('Run Backend Tests') {
             steps {
                 dir('backend') {
@@ -46,6 +56,13 @@ pipeline {
                     bat 'npm install --save-dev supertest jest-junit'
                     bat 'npm test -- --ci --reporters=default --reporters=jest-junit --outputFile=../backend-test-results.xml'
                 }
+            }
+        }
+
+        stage('Stop MongoDB') {
+            steps {
+                bat 'docker stop test-mongo'
+                bat 'docker rm test-mongo'
             }
         }
 
@@ -78,3 +95,4 @@ pipeline {
         }
     }
 }
+
