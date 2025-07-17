@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         COMPOSE_PROJECT_NAME = "quicktask-pipeline"
-        SONAR_TOKEN = "squ_e2ddd670488a09e29ebef5b34d4be0b86dba123"
+        SONAR_TOKEN = credentials('SONAR_TOKEN')  // Jenkins credential ID for Sonar token
     }
 
     stages {
