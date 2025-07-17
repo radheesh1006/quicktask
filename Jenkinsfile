@@ -42,6 +42,7 @@ pipeline {
             steps {
                 dir('backend') {
                     bat 'npm install'
+                    bat 'npm install --save-dev supertest jest-junit'
                     bat 'npm test -- --ci --reporters=default --reporters=jest-junit --outputFile=../backend-test-results.xml'
                 }
             }
@@ -51,14 +52,14 @@ pipeline {
             steps {
                 dir('frontend') {
                     bat 'npm install'
-                    bat 'npm test -- --ci --reporters=default --reporters=jest-junit --outputFile=../frontend-test-results.xml'
+                    bat 'npm test -- --ci --reporters=default --reporters=jest-junit'
                 }
             }
         }
 
         stage('Publish Test Results') {
             steps {
-                junit '**/*-test-results.xml'
+                junit '**/backend-test-results.xml'
             }
         }
 
@@ -69,3 +70,4 @@ pipeline {
         }
     }
 }
+
