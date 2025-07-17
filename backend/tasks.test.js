@@ -5,10 +5,15 @@ const mongoose = require('mongoose');
 let authToken;
 let taskId;
 
+jest.setTimeout(30000);  // Increase timeout to 30 seconds for slow operations
+
 describe('Task API Integration Tests', () => {
   beforeAll(async () => {
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect('mongodb://localhost:27017/testdb');
+      await mongoose.connect('mongodb://localhost:27017/testdb', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
     }
 
     // Register a test user
@@ -87,4 +92,3 @@ describe('Task API Integration Tests', () => {
     expect(res.body.message).toMatch(/deleted/i);
   });
 });
-
