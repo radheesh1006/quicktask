@@ -1,27 +1,46 @@
 const request = require('supertest');
-const app = require('../server'); // Adjust path as needed
+const app = require('./server');
 const mongoose = require('mongoose');
 
+let authToken;
 let taskId;
 
 describe('Task API Integration Tests', () => {
-  // Optional: Connect and disconnect to a test DB
   beforeAll(async () => {
-    // You can also use in-memory MongoDB if needed
     await mongoose.connect('mongodb://localhost:27017/testdb', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
+    // Register a test user
+    await request(app)
+      .post('/api/auth/register')
+      .send({
+        name: 'Test User',
+        email: 'testuser@example.com',
+        password: 'password123'
+      });
+
+    // Login to get JWT token
+    const loginRes = await request(app)
+      .post('/api/auth/login')
+      .send({
+        email: 'testuser@example.com',
+        password: 'password123'
+      });
+
+    authToken = loginRes.body.token;  // Save the token
   });
 
   afterAll(async () => {
-    await mongoose.connection.db.dropDatabase(); // Clean test DB
+    await mongoose.connection.db.dropDatabase();
     await mongoose.connection.close();
   });
 
   test('POST /tasks → should create a new task', async () => {
     const res = await request(app)
-      .post('/tasks')
+      .post('/api/tasks')
+      .set('Authorization', `Bearer ${authToken}`)
       .send({
         title: 'Sample Task',
         description: 'Test description',
@@ -31,18 +50,22 @@ describe('Task API Integration Tests', () => {
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('_id');
-    taskId = res.body._id; // Save for later tests
+    taskId = res.body._id;
   });
 
   test('GET /tasks → should return all tasks', async () => {
-    const res = await request(app).get('/tasks');
+    const res = await request(app)
+      .get('/api/tasks')
+      .set('Authorization', `Bearer ${authToken}`);
+
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
 
   test('PUT /tasks/:id → should update the task', async () => {
     const res = await request(app)
-      .put(`/tasks/${taskId}`)
+      .put(`/api/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${authToken}`)
       .send({
         title: 'Updated Task',
         description: 'Updated description',
@@ -55,9 +78,11 @@ describe('Task API Integration Tests', () => {
   });
 
   test('DELETE /tasks/:id → should delete the task', async () => {
-    const res = await request(app).delete(`/tasks/${taskId}`);
+    const res = await request(app)
+      .delete(`/api/tasks/${taskId}`)
+      .set('Authorization', `Bearer ${authToken}`);
+
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toMatch(/deleted/i);
   });
 });
-
