@@ -15,7 +15,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('My SonarQube Server') {
-                    bat 'sonar-scanner'
+                    bat 'sonar-scanner -Dsonar.login=squ_e2ddd670488a09e29ebef5b34d4be0b86dba123'
                 }
             }
         }
@@ -61,3 +61,4 @@ pipeline {
         }
     }
 }
+
