@@ -7,10 +7,9 @@ let taskId;
 
 describe('Task API Integration Tests', () => {
   beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost:27017/testdb', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect('mongodb://localhost:27017/testdb');
+    }
 
     // Register a test user
     await request(app)
@@ -29,11 +28,13 @@ describe('Task API Integration Tests', () => {
         password: 'password123'
       });
 
-    authToken = loginRes.body.token;  // Save the token
+    authToken = loginRes.body.token;
   });
 
   afterAll(async () => {
-    await mongoose.connection.db.dropDatabase();
+    if (mongoose.connection.db) {
+      await mongoose.connection.db.dropDatabase();
+    }
     await mongoose.connection.close();
   });
 
@@ -86,3 +87,4 @@ describe('Task API Integration Tests', () => {
     expect(res.body.message).toMatch(/deleted/i);
   });
 });
+
