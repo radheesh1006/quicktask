@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         COMPOSE_PROJECT_NAME = "quicktask-pipeline"
+        SONAR_TOKEN = "squ_e2ddd670488a09e29ebef5b34d4be0b86dba123"
     }
 
     stages {
@@ -15,7 +16,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('My SonarQube Server') {
-                    bat 'sonar-scanner -Dsonar.login=squ_e2ddd670488a09e29ebef5b34d4be0b86dba123'
+                    bat 'sonar-scanner -Dsonar.token=%SONAR_TOKEN%'
                 }
             }
         }
