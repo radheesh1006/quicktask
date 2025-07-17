@@ -65,9 +65,15 @@ pipeline {
 
         stage('Check Backend Logs (Optional)') {
             steps {
-                bat 'docker logs quicktask-pipeline-backend-1 || echo "⚠️ Backend log unavailable (container might not be ready yet)"'
+                bat '''
+                    for /l %%x in (1, 1, 3) do (
+                        docker logs quicktask-pipeline-backend-1 && goto success
+                        timeout /t 5
+                    )
+                    echo "⚠️ Backend log unavailable (container might not be ready yet)"
+                    :success
+                '''
             }
         }
     }
 }
-
