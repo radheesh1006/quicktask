@@ -32,10 +32,23 @@ pipeline {
 
         stage('Rebuild & Run Containers') {
             steps {
-                bat 'docker-compose down --remove-orphans'
-                bat 'docker-compose build --no-cache'
-                bat 'docker-compose up -d'
-                bat 'docker ps'
+                bat '''
+                    echo Stopping and removing any existing quicktask-mongo container if exists
+                    docker stop quicktask-mongo || echo quicktask-mongo not running
+                    docker rm quicktask-mongo || echo quicktask-mongo not present
+
+                    echo Bringing down existing docker-compose containers
+                    docker-compose down --remove-orphans
+
+                    echo Rebuilding containers without cache
+                    docker-compose build --no-cache
+
+                    echo Starting containers
+                    docker-compose up -d
+
+                    echo Listing all running containers
+                    docker ps
+                '''
             }
         }
 
@@ -78,4 +91,5 @@ pipeline {
         }
     }
 }
+
 
