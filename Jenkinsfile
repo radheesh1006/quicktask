@@ -16,18 +16,24 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('My SonarQube Server') {
-                    bat 'sonar-scanner -Dsonar.token=%SONAR_TOKEN%'
+                    bat '''
+                        sonar-scanner ^
+                        -Dsonar.projectKey=quicktask ^
+                        -Dsonar.projectName=QuickTask ^
+                        -Dsonar.projectVersion=1.0 ^
+                        -Dsonar.sources=backend ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.token=%SONAR_TOKEN%
+                    '''
                 }
             }
         }
 
         stage('Rebuild & Run Containers') {
             steps {
-                dir('') {
-                    bat 'docker-compose down --remove-orphans'
-                    bat 'docker-compose build --no-cache'
-                    bat 'docker-compose up -d'
-                }
+                bat 'docker-compose down --remove-orphans'
+                bat 'docker-compose build --no-cache'
+                bat 'docker-compose up -d'
             }
         }
 
