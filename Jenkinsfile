@@ -21,7 +21,8 @@ pipeline {
                         -Dsonar.projectKey=quicktask ^
                         -Dsonar.projectName=QuickTask ^
                         -Dsonar.projectVersion=1.0 ^
-                        -Dsonar.sources=backend ^
+                        -Dsonar.sources=backend,frontend ^
+                        -Dsonar.exclusions=**/node_modules/** ^
                         -Dsonar.host.url=http://localhost:9000 ^
                         -Dsonar.token=%SONAR_TOKEN%
                     '''
@@ -68,4 +69,3 @@ pipeline {
         }
     }
 }
-
