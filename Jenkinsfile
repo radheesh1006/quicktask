@@ -39,17 +39,6 @@ pipeline {
             }
         }
 
-        stage('Start MongoDB') {
-            steps {
-                bat '''
-                    docker run -d --name quicktask-mongo ^
-                    -p 27017:27017 ^
-                    mongo:6
-                '''
-                bat 'timeout /t 10'
-            }
-        }
-
         stage('Run Backend Tests') {
             steps {
                 dir('backend') {
@@ -57,15 +46,6 @@ pipeline {
                     bat 'npm install --save-dev supertest jest-junit'
                     bat 'npm test -- --ci --reporters=default --reporters=jest-junit --outputFile=../backend-test-results.xml'
                 }
-            }
-        }
-
-        stage('Stop MongoDB') {
-            steps {
-                bat '''
-                    docker stop quicktask-mongo
-                    docker rm quicktask-mongo
-                '''
             }
         }
 
@@ -98,3 +78,4 @@ pipeline {
         }
     }
 }
+
