@@ -62,6 +62,9 @@ pipeline {
 
                     echo Running backend tests with JUnit output
                     docker exec quicktask-pipeline-backend-1 npm test
+
+                    echo Copying test report from container to workspace
+                    docker cp quicktask-pipeline-backend-1:/app/backend/backend-test-results.xml backend\\backend-test-results.xml
                 '''
             }
         }
