@@ -55,7 +55,7 @@ pipeline {
             steps {
                 bat '''
                     echo Cleaning old backend test report if exists
-                    del /F /Q backend\\junit.xml 2>nul
+                    del /F /Q backend\\backend-test-results.xml 2>nul
 
                     echo Installing dependencies in backend container
                     docker exec quicktask-pipeline-backend-1 npm install
@@ -77,7 +77,7 @@ pipeline {
 
         stage('Publish Test Results') {
             steps {
-                junit 'backend/junit.xml'
+                junit 'backend/backend-test-results.xml'
             }
         }
 
