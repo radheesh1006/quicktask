@@ -79,10 +79,10 @@ pipeline {
                         echo Installing frontend dependencies
                         npm install
 
-                        echo Running frontend tests and generating junit report
+                        echo Running frontend tests
                         npm test || exit /b 1
 
-                        echo Listing files to confirm test report exists
+                        echo Listing files in frontend directory
                         dir
                     '''
                 }
@@ -118,6 +118,3 @@ pipeline {
         }
     }
 }
-
-
-
