@@ -77,6 +77,8 @@ pipeline {
                         del /F /Q frontend-test-results.xml 2>nul
 
                         npm install
+
+                        echo Running frontend tests and generating junit report
                         npm test -- --ci --reporters=default --reporters=jest-junit
                     '''
                 }
@@ -112,4 +114,3 @@ pipeline {
         }
     }
 }
-
