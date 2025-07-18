@@ -55,6 +55,9 @@ pipeline {
         stage('Run Backend Tests') {
             steps {
                 bat '''
+                    echo Cleaning old backend test report if exists
+                    del /F /Q backend\\backend-test-results.xml 2>nul
+
                     echo Running backend tests inside the backend container
                     docker exec quicktask-pipeline-backend-1 npm install
                     docker exec quicktask-pipeline-backend-1 npm install --save-dev supertest jest-junit
@@ -92,6 +95,3 @@ pipeline {
         }
     }
 }
-
-
-
