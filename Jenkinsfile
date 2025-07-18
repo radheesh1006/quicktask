@@ -66,6 +66,17 @@ pipeline {
             }
         }
 
+        stage('Deployment Report') {
+            steps {
+                bat '''
+                    echo Deployment Report > deployment-log.txt
+                    docker-compose up -d >> deployment-log.txt 2>&1
+                    docker ps >> deployment-log.txt 2>&1
+                    echo Deployment Completed >> deployment-log.txt
+                '''
+            }
+        }
+
         stage('Check Backend Logs (Optional)') {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -87,7 +98,8 @@ pipeline {
             bat '''
                 docker image prune -f
             '''
-            archiveArtifacts artifacts: 'build-log.txt', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'build-log.txt, deployment-log.txt', allowEmptyArchive: true
         }
     }
 }
+
