@@ -20,11 +20,16 @@
   },
   "devDependencies": {
     "jest": "^29.0.0",
-    "jest-junit": "^16.0.0"
+    "jest-junit": "^16.0.0",
+    "supertest": "^6.3.3"
   },
   "jest": {
     "testEnvironment": "node",
     "coverageDirectory": "./coverage",
     "collectCoverage": true
+  },
+  "jest-junit": {
+    "outputDirectory": "./backend",
+    "outputName": "backend-test-results.xml"
   }
 }
