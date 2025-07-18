@@ -9,11 +9,10 @@ jest.setTimeout(30000);  // Increase timeout to 30 seconds for slow operations
 
 describe('Task API Integration Tests', () => {
   beforeAll(async () => {
+    const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/testdb';
+
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect('mongodb://localhost:27017/testdb', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
+      await mongoose.connect(mongoUri);
     }
 
     // Register a test user
