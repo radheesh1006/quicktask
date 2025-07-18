@@ -23,7 +23,6 @@ pipeline {
                         -Dsonar.projectVersion=1.0 ^
                         -Dsonar.sources=backend,frontend ^
                         -Dsonar.exclusions=**/node_modules/** ^
-                        -Dsonar.host.url=http://localhost:9000 ^
                         -Dsonar.token=%SONAR_TOKEN%
                     '''
                 }
@@ -58,10 +57,11 @@ pipeline {
                     echo Cleaning old backend test report if exists
                     del /F /Q backend\\backend-test-results.xml 2>nul
 
-                    echo Running backend tests inside the backend container
+                    echo Installing dependencies in backend container
                     docker exec quicktask-pipeline-backend-1 npm install
-                    docker exec quicktask-pipeline-backend-1 npm install --save-dev supertest jest-junit
-                    docker exec quicktask-pipeline-backend-1 npm test -- --ci --reporters=default --reporters=jest-junit --outputFile=backend-test-results.xml
+
+                    echo Running backend tests with JUnit output
+                    docker exec quicktask-pipeline-backend-1 npm test
                 '''
             }
         }
@@ -77,21 +77,29 @@ pipeline {
 
         stage('Publish Test Results') {
             steps {
-                junit '**/backend/backend-test-results.xml'
+                junit 'backend/backend-test-results.xml'
             }
         }
 
         stage('Check Backend Logs (Optional)') {
             steps {
-                bat '''
-                    for /l %%x in (1, 1, 3) do (
-                        docker logs quicktask-pipeline-backend-1 && goto success
-                        timeout /t 5
-                    )
-                    echo "⚠️ Backend log unavailable (container might not be ready yet)"
-                    :success
-                '''
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    bat '''
+                        for /l %%x in (1, 1, 3) do (
+                            docker logs quicktask-pipeline-backend-1 && goto success
+                            timeout /t 5
+                        )
+                        echo "⚠️ Backend log unavailable (container might not be ready yet)"
+                        :success
+                    '''
+                }
             }
+        }
+    }
+
+    post {
+        always {
+            bat 'docker-compose down'
         }
     }
 }
