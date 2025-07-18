@@ -79,7 +79,7 @@ pipeline {
                         npm install
 
                         echo Running frontend tests and generating junit report
-                        npm test -- --ci --reporters=default --reporters=jest-junit
+                        npm test
                     '''
                 }
             }
@@ -114,3 +114,4 @@ pipeline {
         }
     }
 }
+
