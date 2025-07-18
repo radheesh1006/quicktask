@@ -3,6 +3,6 @@ module.exports = {
   setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
   reporters: [
     'default',
-    ['jest-junit', { outputDirectory: './', outputName: 'frontend-test-results.xml' }]
+    ['jest-junit', { outputDirectory: './frontend', outputName: 'frontend-test-results.xml' }]
   ]
 };
