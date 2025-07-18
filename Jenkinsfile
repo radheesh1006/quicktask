@@ -58,14 +58,10 @@ pipeline {
             steps {
                 dir('frontend') {
                     bat '''
-                        echo Cleaning old frontend test report if exists
                         del /F /Q frontend-test-results.xml 2>nul
 
-                        echo Installing frontend dependencies
                         npm install
-
-                        echo Running frontend tests
-                        npm test
+                        npm test -- --watchAll=false
                     '''
                 }
             }
@@ -74,7 +70,7 @@ pipeline {
         stage('Publish Test Results') {
             steps {
                 junit 'backend/backend-test-results.xml'
-                junit 'frontend/frontend-test-results.xml'
+                junit 'frontend/frontend/frontend-test-results.xml'
             }
         }
 
@@ -96,7 +92,10 @@ pipeline {
 
     post {
         always {
-            bat 'docker-compose down'
+            bat '''
+                docker-compose down
+                docker image prune -f
+            '''
         }
     }
 }
