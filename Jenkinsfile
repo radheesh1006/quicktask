@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         COMPOSE_PROJECT_NAME = "quicktask-pipeline"
-        SONAR_TOKEN = credentials('SONAR_TOKEN')  // Jenkins credential ID for Sonar token
+        SONAR_TOKEN = credentials('SONAR_TOKEN')
     }
 
     stages {
@@ -32,20 +32,12 @@ pipeline {
         stage('Rebuild & Run Containers') {
             steps {
                 bat '''
-                    echo Stopping and removing any existing quicktask-mongo container if exists
                     docker stop quicktask-mongo || echo quicktask-mongo not running
                     docker rm quicktask-mongo || echo quicktask-mongo not present
 
-                    echo Bringing down existing docker-compose containers
                     docker-compose down --remove-orphans || echo docker-compose down failed
-
-                    echo Rebuilding containers without cache
                     docker-compose build --no-cache || exit /b 1
-
-                    echo Starting containers
                     docker-compose up -d || exit /b 1
-
-                    echo Listing all running containers
                     docker ps
                 '''
             }
@@ -54,16 +46,9 @@ pipeline {
         stage('Run Backend Tests') {
             steps {
                 bat '''
-                    echo Cleaning old backend test report if exists
                     del /F /Q backend\\backend-test-results.xml 2>nul
-
-                    echo Installing dependencies in backend container
                     docker exec quicktask-pipeline-backend-1 npm install
-
-                    echo Running backend tests with JUnit output
                     docker exec quicktask-pipeline-backend-1 npm test
-
-                    echo Copying backend test report from container to workspace
                     docker cp quicktask-pipeline-backend-1:/app/backend/backend-test-results.xml backend\\backend-test-results.xml
                 '''
             }
@@ -80,10 +65,7 @@ pipeline {
                         npm install
 
                         echo Running frontend tests
-                        npm test || exit /b 1
-
-                        echo Listing files in frontend directory
-                        dir
+                        npm test
                     '''
                 }
             }
