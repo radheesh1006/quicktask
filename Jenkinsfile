@@ -76,10 +76,14 @@ pipeline {
                         echo Cleaning old frontend test report if exists
                         del /F /Q frontend-test-results.xml 2>nul
 
+                        echo Installing frontend dependencies
                         npm install
 
                         echo Running frontend tests and generating junit report
-                        npm test
+                        npm test || exit /b 1
+
+                        echo Listing files to confirm test report exists
+                        dir
                     '''
                 }
             }
@@ -114,5 +118,6 @@ pipeline {
         }
     }
 }
+
 
 
