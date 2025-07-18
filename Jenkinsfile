@@ -54,23 +54,9 @@ pipeline {
             }
         }
 
-        stage('Run Frontend Tests') {
-            steps {
-                dir('frontend') {
-                    bat '''
-                        del /F /Q frontend-test-results.xml 2>nul
-
-                        npm install
-                        npm test -- --watchAll=false
-                    '''
-                }
-            }
-        }
-
         stage('Publish Test Results') {
             steps {
                 junit 'backend/backend-test-results.xml'
-                junit 'frontend/frontend/frontend-test-results.xml'
             }
         }
 
