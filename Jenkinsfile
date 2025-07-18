@@ -79,7 +79,6 @@ pipeline {
     post {
         always {
             bat '''
-                docker-compose down
                 docker image prune -f
             '''
         }
