@@ -36,9 +36,9 @@ pipeline {
                     docker rm quicktask-mongo || echo quicktask-mongo not present
 
                     docker-compose down --remove-orphans || echo docker-compose down failed
-                    docker-compose build --no-cache || exit /b 1
-                    docker-compose up -d || exit /b 1
-                    docker ps
+                    docker-compose build --no-cache > build-log.txt 2>&1
+                    docker-compose up -d >> build-log.txt 2>&1
+                    docker ps >> build-log.txt 2>&1
                 '''
             }
         }
@@ -57,6 +57,12 @@ pipeline {
         stage('Publish Test Results') {
             steps {
                 junit 'backend/backend-test-results.xml'
+            }
+        }
+
+        stage('Display Build Log') {
+            steps {
+                bat 'type build-log.txt'
             }
         }
 
@@ -81,6 +87,7 @@ pipeline {
             bat '''
                 docker image prune -f
             '''
+            archiveArtifacts artifacts: 'build-log.txt', allowEmptyArchive: true
         }
     }
 }
