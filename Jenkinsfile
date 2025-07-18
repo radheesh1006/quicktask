@@ -72,8 +72,13 @@ pipeline {
         stage('Run Frontend Tests') {
             steps {
                 dir('frontend') {
-                    bat 'npm install'
-                    bat 'npm test -- --ci --reporters=default --reporters=jest-junit'
+                    bat '''
+                        echo Cleaning old frontend test report if exists
+                        del /F /Q frontend-test-results.xml 2>nul
+
+                        npm install
+                        npm test -- --ci --reporters=default --reporters=jest-junit
+                    '''
                 }
             }
         }
@@ -81,6 +86,7 @@ pipeline {
         stage('Publish Test Results') {
             steps {
                 junit 'backend/backend-test-results.xml'
+                junit 'frontend/frontend-test-results.xml'
             }
         }
 
