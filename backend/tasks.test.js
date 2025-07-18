@@ -33,14 +33,14 @@ describe('Task API Integration Tests', () => {
       });
 
     authToken = loginRes.body.token;
-  });
+  }, 30000);  // <-- Added explicit timeout to beforeAll
 
   afterAll(async () => {
     if (mongoose.connection.db) {
       await mongoose.connection.db.dropDatabase();
     }
     await mongoose.connection.close();
-  });
+  }, 30000);  // <-- Added explicit timeout to afterAll
 
   test('POST /tasks → should create a new task', async () => {
     const res = await request(app)
