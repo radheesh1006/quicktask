@@ -30,6 +30,7 @@
   },
   "jest-junit": {
     "outputDirectory": "./backend",
-    "outputName": "junit.xml"
+    "outputName": "backend-test-results.xml"
   }
 }
+
